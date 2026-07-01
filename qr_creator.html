@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de QR Transparente</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        h1 {
+            color: #1a202c;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        input[type="url"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        input[type="url"]:focus {
+            border-color: #4c51bf;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4c51bf;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #434190;
+        }
+        /* El botón de descarga empieza oculto y tiene otro color */
+        #btn-download {
+            background-color: #48bb78;
+            display: none;
+        }
+        #btn-download:hover {
+            background-color: #38a169;
+        }
+        /* Contenedor con un fondo cuadriculado gris para notar la transparencia del QR */
+        .qr-wrapper {
+            margin-top: 25px;
+            padding: 15px;
+            border-radius: 8px;
+            background-image: linear-gradient(45deg, #e2e8f0 25%, transparent 25%), 
+                              linear-gradient(-45deg, #e2e8f0 25%, transparent 25%), 
+                              linear-gradient(45deg, transparent 75%, #e2e8f0 75%), 
+                              linear-gradient(-45deg, transparent 75%, #e2e8f0 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+            display: inline-block;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        <h1>QR´s Transparente generator</h1>
+        <input type="url" id="url-input" placeholder="https://tu-pagina-web.com" value="https://">
+        <button onclick="generarQR()">Generar QR</button>
+        <button id="btn-download" onclick="descargarPNG()">Descargar PNG Transparente</button>
+        
+        <div>
+            <div class="qr-wrapper">
+                <canvas id="qr-canvas"></canvas>
+            </div>
+        </div>
+           <div class="spacer" style="height: 25px;"></div>
+
+        <footer style="text-align: center; color: #38a169; font-size: 1.5rem; font-weight: bold; "> Desarrollado por Jose Luis Corazao </footer>
+    </div>
+    </div>
+ 
+    <script>
+        // Inicializar el código QR vacío (o con un diseño por defecto)
+        const canvas = document.getElementById('qr-canvas');
+        const qr = new QRious({
+            element: canvas,
+            size: 250,
+            level: 'H', // Alta capacidad de corrección de errores
+            foreground: '#000000', // Color del QR (Negro)
+            background: 'transparent', // ¡Aquí se define la transparencia!
+            value: ''
+        });
+
+        function generarQR() {
+            const url = document.getElementById('url-input').value.trim();
+            
+            if (url === "" || url === "https://") {
+                alert("Por favor, ingresa una URL válida.");
+                return;
+            }
+            
+            // Asignamos la URL al generador
+            qr.value = url;
+            
+            // Hacemos visible el botón de descarga
+            document.getElementById('btn-download').style.display = 'block';
+        }
+
+        function descargarPNG() {
+            // Convertimos el contenido del Canvas a una URL de imagen PNG
+            const imageURL = canvas.toDataURL("image/png");
+            
+            // Creamos un enlace temporal en memoria para forzar la descarga
+            const link = document.createElement('a');
+            link.href = imageURL;
+            link.download = 'codigo-qr-transparente.png'; // Nombre del archivo descargado
+            
+            // Simulamos el clic y lo eliminamos
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+
+</body>
+</html>
